@@ -757,6 +757,7 @@ async function runOpenAiVoiceSoundPhase(client, model, ctx, ideasMd, promptMd) {
 }
 
 export async function handler(event) {
+  try {
   const cors = corsHeaders();
 
   if (event.httpMethod === "OPTIONS") {
@@ -972,4 +973,12 @@ export async function handler(event) {
     successBody.voiceSoundModel = voiceSoundModelUsed;
   }
   return jsonResponse(200, successBody);
+  } catch (e) {
+    console.error("[generating-agent] unhandled", e);
+    return jsonResponse(500, {
+      ok: false,
+      error: e instanceof Error ? e.message : String(e),
+      code: "unhandled_error",
+    });
+  }
 }

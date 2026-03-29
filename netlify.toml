@@ -21,7 +21,8 @@
   memory = 1024
 
 [functions."generating-agent"]
-  timeout = 120
+  # Anthropic tool loops can exceed 120s; gateway often returns 502 if the function times out
+  timeout = 300
   memory = 1024
 
 [functions."remotion-coding-agent"]
