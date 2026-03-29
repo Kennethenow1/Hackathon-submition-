@@ -1,11 +1,9 @@
 import { spawn } from "node:child_process";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { corsHeaders } from "./lib/cors.mjs";
 import { runAudioPipeline } from "./lib/audio-pipeline.mjs";
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+import { moduleDirname } from "./lib/module-dirname.mjs";
 
 /** 1-2 min videos (~3600 frames @ 1080p) need generous render time */
 const RENDER_TIMEOUT_MS = 1_800_000;
@@ -27,7 +25,18 @@ function jsonResponse(statusCode, body, extraHeaders = {}) {
 }
 
 function monorepoRoot() {
-  return path.resolve(__dirname, "..", "..");
+  const d = moduleDirname();
+  const candidates = [
+    d,
+    path.resolve(d, "..", ".."),
+    process.cwd(),
+  ];
+  for (const root of candidates) {
+    if (existsSync(path.join(root, "packages", "remotion", "package.json"))) {
+      return path.resolve(root);
+    }
+  }
+  return path.resolve(d, "..", "..");
 }
 
 function remotionPackageDir() {

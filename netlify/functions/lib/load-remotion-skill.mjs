@@ -1,8 +1,6 @@
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import path, { join, relative } from "node:path";
-import { fileURLToPath } from "node:url";
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+import { resolveAgentContextRemotionDir } from "./module-dirname.mjs";
 
 const SKILL_FILE = "SKILL.md";
 
@@ -32,21 +30,9 @@ export function stripYamlFrontmatter(source) {
 }
 
 export function resolveRemotionSkillRoot() {
-  // This file lives in netlify/functions/lib → repo root is three levels up.
-  const fromNetlifyFunctions = join(
-    __dirname,
-    "..",
-    "..",
-    "..",
-    "agent-context",
-    "remotion"
-  );
-  if (existsSync(join(fromNetlifyFunctions, SKILL_FILE))) {
-    return fromNetlifyFunctions;
-  }
-  const fromCwd = join(process.cwd(), "agent-context", "remotion");
-  if (existsSync(join(fromCwd, SKILL_FILE))) {
-    return fromCwd;
+  const { candidates } = resolveAgentContextRemotionDir();
+  for (const root of candidates) {
+    if (existsSync(join(root, SKILL_FILE))) return root;
   }
   throw new Error(
     "Remotion skill not found. Expected agent-context/remotion/SKILL.md (vendored remotion-best-practices)."

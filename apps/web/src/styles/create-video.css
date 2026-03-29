@@ -9,12 +9,6 @@
   padding: clamp(1.25rem, 4vw, 2.5rem);
 }
 
-/* Pipeline strip above the card — align content to top so long forms scroll nicely */
-.create-flow--with-pipeline {
-  justify-content: flex-start;
-  padding-top: clamp(1rem, 3vw, 1.75rem);
-}
-
 /* Corner washes — behind card, pointer-events none */
 .create-flow__wash {
   position: fixed;
@@ -39,7 +33,7 @@
 
 .create-flow__toolbar {
   position: relative;
-  z-index: 3;
+  z-index: 1001;
   width: 100%;
   max-width: 40rem;
   margin-bottom: 1rem;
@@ -70,7 +64,7 @@
 
 .create-card {
   position: relative;
-  z-index: 2;
+  z-index: 1001;
   width: 100%;
   max-width: 40rem;
   padding: clamp(1.35rem, 3.5vw, 2rem);

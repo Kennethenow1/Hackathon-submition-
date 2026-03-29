@@ -4,6 +4,7 @@ dist
 *.local
 .env
 .env.*
+!.env.example
 
 # Netlify CLI local dev / function bundler output
 **/.netlify/
