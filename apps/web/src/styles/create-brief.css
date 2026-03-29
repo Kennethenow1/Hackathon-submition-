@@ -956,12 +956,14 @@
   justify-content: center;
   height: 46px;
   margin: 0.15rem 0 0.35rem;
+  pointer-events: none;
 }
 
 .step-flow-connector__svg {
   width: 52px;
   height: 46px;
   overflow: visible;
+  pointer-events: none;
 }
 
 .step-flow-connector__wire-path {
@@ -990,6 +992,8 @@
 
 /* Stage hint under pipeline — matches brief card tone */
 .create-flow-stage-banner {
+  position: relative;
+  z-index: 1;
   width: 100%;
   max-width: 44rem;
   margin: 0 auto 1rem;

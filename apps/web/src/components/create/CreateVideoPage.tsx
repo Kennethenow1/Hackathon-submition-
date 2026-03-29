@@ -862,7 +862,6 @@ export function CreateVideoPage() {
             <button
               type="button"
               className="create-submit"
-              disabled={!websiteBundle}
               onClick={() =>
                 navigate("/create/generate", {
                   state: {
@@ -877,7 +876,8 @@ export function CreateVideoPage() {
             </button>
             {!websiteBundle ? (
               <p className="create-hint">
-                Save a website component first (capture URL or upload HTML).
+                No bundle in this browser yet — capture a URL or upload HTML first, or open
+                Generate prompts to see what is missing.
               </p>
             ) : null}
             <button type="submit" className="create-submit create-submit--secondary">

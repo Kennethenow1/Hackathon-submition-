@@ -2,7 +2,8 @@
 
 .pipeline {
   position: relative;
-  z-index: 1001;
+  /* Below main card/form so pipeline SVG/connectors never steal clicks */
+  z-index: 0;
   width: 100%;
   max-width: 56rem;
   margin: 0 auto 1.25rem;
@@ -171,6 +172,7 @@ a.pipeline-node:hover {
   height: 2.5rem;
   position: relative;
   align-self: center;
+  pointer-events: none;
 }
 
 .pipeline-connector__svg {
@@ -178,6 +180,7 @@ a.pipeline-node:hover {
   height: 100%;
   display: block;
   overflow: visible;
+  pointer-events: none;
 }
 
 .pipeline-connector__path--dash {
