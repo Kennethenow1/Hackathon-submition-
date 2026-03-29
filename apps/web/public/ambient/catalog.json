@@ -1,0 +1,36 @@
+{
+  "tracks": [
+    {
+      "id": "floating-cities",
+      "title": "Floating Cities",
+      "artist": "Kevin MacLeod",
+      "license": "Creative Commons BY 4.0 — https://incompetech.com",
+      "downloadUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Floating%20Cities.mp3",
+      "file": "/ambient/files/floating-cities.mp3"
+    },
+    {
+      "id": "comfortable-mystery-3",
+      "title": "Comfortable Mystery 3",
+      "artist": "Kevin MacLeod",
+      "license": "Creative Commons BY 4.0 — https://incompetech.com",
+      "downloadUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Comfortable%20Mystery%203.mp3",
+      "file": "/ambient/files/comfortable-mystery-3.mp3"
+    },
+    {
+      "id": "dreamer",
+      "title": "Dreamer",
+      "artist": "Kevin MacLeod",
+      "license": "Creative Commons BY 4.0 — https://incompetech.com",
+      "downloadUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Dreamer.mp3",
+      "file": "/ambient/files/dreamer.mp3"
+    },
+    {
+      "id": "ice-flow",
+      "title": "Ice Flow",
+      "artist": "Kevin MacLeod",
+      "license": "Creative Commons BY 4.0 — https://incompetech.com",
+      "downloadUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Ice%20Flow.mp3",
+      "file": "/ambient/files/ice-flow.mp3"
+    }
+  ]
+}

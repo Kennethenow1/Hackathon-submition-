@@ -1,0 +1,15 @@
+node_modules
+dist
+.DS_Store
+*.local
+.env
+.env.*
+
+# Netlify CLI local dev / function bundler output
+**/.netlify/
+
+# Local Remotion preview renders (served by Vite)
+apps/web/public/renders/*.mp4
+
+# Ephemeral input props written by remotion-render-preview
+packages/remotion/render-input-props.json

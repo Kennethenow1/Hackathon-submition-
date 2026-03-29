@@ -1,0 +1,38 @@
+[build]
+  command = "npm install && npm run build --workspace=web"
+  publish = "apps/web/dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+  external_node_modules = ["cheerio", "@sparticuz/chromium", "puppeteer-core"]
+  # Vendored Remotion skill for remotion-coding-agent (and local function serve)
+  included_files = ["agent-context/remotion/**"]
+
+[functions."capture-static"]
+  timeout = 30
+
+[functions."capture-rendered"]
+  # Must exceed CAPTURE_RENDERED_NAVIGATION_TIMEOUT_MS (default 120s) + snapshot work
+  timeout = 180
+  memory = 1024
+
+[functions."generating-agent"]
+  timeout = 120
+
+[functions."remotion-coding-agent"]
+  timeout = 120
+
+[functions."remotion-render-preview"]
+  timeout = 300
+
+[dev]
+  publish = "apps/web/dist"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

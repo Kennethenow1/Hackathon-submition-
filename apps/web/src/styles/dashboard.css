@@ -1,0 +1,112 @@
+.dashboard {
+  position: relative;
+  z-index: 1000;
+  min-height: 100vh;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.dashboard__header {
+  max-width: 72rem;
+}
+
+.dashboard__back {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-rose-deep);
+  background: transparent;
+  border: none;
+  padding: 0.35rem 0;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.dashboard__back:hover {
+  color: var(--color-ink);
+}
+
+.dashboard__back:focus-visible {
+  outline: 2px solid var(--color-rose);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.dashboard__header-content {
+  max-width: 52rem;
+}
+
+.dashboard__eyebrow {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-rose-deep);
+  opacity: 0.88;
+}
+
+.dashboard__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.1;
+  color: var(--color-ink);
+}
+
+.dashboard__lede {
+  margin: 0.75rem 0 0;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 400;
+  max-width: 36rem;
+  color: var(--color-ink-muted);
+}
+
+.dashboard__main {
+  flex: 1;
+  max-width: 72rem;
+}
+
+.dashboard__loading {
+  padding: 3rem;
+  text-align: center;
+  color: var(--color-ink-muted);
+  font-family: var(--font-sans);
+}
+
+/* Video card styles specific to dashboard */
+.video-card__player {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.video-card__placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    var(--color-blush) 0%,
+    var(--color-surface-soft) 100%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.video-card__placeholder::after {
+  content: "";
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: var(--color-surface);
+  opacity: 0.5;
+}

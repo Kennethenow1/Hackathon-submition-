@@ -1,0 +1,149 @@
+{
+  "version": 2,
+  "effects": [
+    {
+      "id": "floating-3d-ui",
+      "label": "Floating 3D UI Mockup",
+      "description": "App UI floats in 3D space with perspective tilt, gentle sine drift, and cinematic depth shadow. Think Google product ad style — the interface hovers and rotates subtly against a gradient mesh backdrop.",
+      "tags": ["3d", "perspective", "device-frame", "hero"]
+    },
+    {
+      "id": "cinematic-zoom-pan",
+      "label": "Cinematic Zoom & Pan",
+      "description": "Slow camera push-in or pan across the UI, eased with cubic bezier for a filmic feel. Great for revealing features or highlighting a workflow. Pairs well with cursor animation.",
+      "tags": ["camera", "zoom", "motion", "walkthrough"]
+    },
+    {
+      "id": "feature-zoom-callout",
+      "label": "Feature Zoom Callout",
+      "description": "Smooth zoom from full-page view into a specific feature area (scale 1→2.2), with a glassmorphism label panel sliding in beside. Hold, then pull back. Like zooming into a map pin.",
+      "tags": ["zoom", "callout", "feature", "highlight"]
+    },
+    {
+      "id": "staggered-card-grid",
+      "label": "Staggered Card Grid",
+      "description": "Cards or feature panels animate in one-by-one with spring physics — translateY + opacity + slight rotation. Each card has hover-lift float (sine drift) after landing. Great for feature lists or pricing tiers.",
+      "tags": ["cards", "grid", "stagger", "spring"]
+    },
+    {
+      "id": "word-by-word-kinetic",
+      "label": "Kinetic Typography",
+      "description": "Headlines animate word-by-word or letter-by-letter with spring delays, scale bounces, or clip-path reveals. Can include shimmer gradient sweep, glow pulse, or color-shift effects on key words.",
+      "tags": ["text", "typography", "kinetic", "headline"]
+    },
+    {
+      "id": "gradient-mesh-bg",
+      "label": "Animated Gradient Mesh",
+      "description": "Rich organic background with 3-5 radial gradients that drift and pulse using sin/cos. Colors derived from the site's palette. Feels like Apple or Stripe marketing pages.",
+      "tags": ["background", "gradient", "ambient", "atmosphere"]
+    },
+    {
+      "id": "cursor-interaction",
+      "label": "Cursor Click-Through",
+      "description": "Animated cursor navigates the UI, clicks buttons, fills inputs, or toggles features. Click ripple effect on impact. Demonstrates the product workflow as if a real user is interacting.",
+      "tags": ["cursor", "interaction", "demo", "walkthrough"]
+    },
+    {
+      "id": "light-leak-transition",
+      "label": "Light Leak Transition",
+      "description": "Cinematic light leak overlay (warm amber/white wash) between scenes using @remotion/light-leaks. Smooth 20-30 frame crossfade with hue shift. Premium film-grade scene change.",
+      "tags": ["transition", "light-leak", "cinematic"]
+    },
+    {
+      "id": "particle-field",
+      "label": "Floating Particle Field",
+      "description": "Dozens of small luminous dots drift slowly with sine-wave motion, varying sizes and opacities. Creates depth and atmosphere behind the main content. Like dust motes in a sunbeam.",
+      "tags": ["particles", "ambient", "atmosphere", "depth"]
+    },
+    {
+      "id": "morphing-shapes",
+      "label": "Morphing Shape Transitions",
+      "description": "Geometric shapes (circles, rounded rects, blobs) morph between states using animated clip-path or SVG path interpolation. Great for transitioning between concepts or before/after states.",
+      "tags": ["shapes", "morph", "transition", "svg"]
+    },
+    {
+      "id": "number-counter-reveal",
+      "label": "Metric Counter Reveal",
+      "description": "Key stats and numbers count up from zero with spring physics — 0 → 10,000+ users. Works with percentage bars, revenue figures, or performance metrics. Each counter staggers in with a delay.",
+      "tags": ["numbers", "stats", "counter", "data"]
+    },
+    {
+      "id": "split-screen-compare",
+      "label": "Split Screen Comparison",
+      "description": "Screen splits with an animated wipe (clip-path inset or sliding divider) to show before/after or two product states side by side. Labels animate in for each side.",
+      "tags": ["split", "comparison", "before-after", "wipe"]
+    },
+    {
+      "id": "device-frame-showcase",
+      "label": "Device Frame Showcase",
+      "description": "Product shown inside realistic browser chrome (Safari/Chrome dots + address bar) or phone frame. Frame slides in with 3D perspective, shadow, and spring landing. The gold standard for SaaS demos.",
+      "tags": ["device", "browser", "frame", "mockup"]
+    },
+    {
+      "id": "parallax-depth-layers",
+      "label": "Parallax Depth Layers",
+      "description": "Three-layer parallax: background moves slowest, mid-layer (orbs/particles) at medium speed, foreground (UI/text) fastest. Creates convincing depth without real 3D. Subtle but premium.",
+      "tags": ["parallax", "depth", "layers", "3d"]
+    },
+    {
+      "id": "glassmorphism-panels",
+      "label": "Glassmorphism Panels",
+      "description": "Frosted glass UI panels (backdrop-filter blur + semi-transparent white/dark background + subtle border) that float over content. Modern, premium look for tooltips, feature labels, or stat cards.",
+      "tags": ["glass", "blur", "panel", "modern"]
+    },
+    {
+      "id": "icon-animation-burst",
+      "label": "Animated Icon Burst",
+      "description": "Icons or emoji spring in with overshoot, then settle with a gentle bounce. Can include a radial burst ring or confetti spray on arrival. Great for feature introductions.",
+      "tags": ["icon", "animation", "burst", "spring"]
+    },
+    {
+      "id": "text-highlight-sweep",
+      "label": "Text Highlight Sweep",
+      "description": "A colored highlight bar sweeps behind key words in a sentence, like a digital marker pen. Draws attention to the value prop. Can combine with scale or glow on the highlighted segment.",
+      "tags": ["text", "highlight", "sweep", "emphasis"]
+    },
+    {
+      "id": "orbit-ring-decoration",
+      "label": "Orbiting Ring Decorations",
+      "description": "Dashed or dotted SVG rings that slowly rotate around a central element (logo, product icon, or device frame). Adds tech-forward depth. Rings can pulse opacity or shift color over time.",
+      "tags": ["decoration", "ring", "orbit", "ambient"]
+    },
+    {
+      "id": "slide-reveal-wipe",
+      "label": "Directional Slide Reveal",
+      "description": "Content slides in from a direction (right, bottom, diagonal) with eased motion, revealing the next scene or element. Clean and minimal. Can combine with a slight blur-to-sharp focus effect.",
+      "tags": ["transition", "slide", "reveal", "direction"]
+    },
+    {
+      "id": "confetti-celebration",
+      "label": "Confetti Celebration",
+      "description": "Burst of colorful confetti particles on a milestone moment (sign-up, purchase, achievement). Physics-based gravity and rotation on each piece. Short and punchy — 1-2 seconds.",
+      "tags": ["celebration", "confetti", "milestone", "fun"]
+    },
+    {
+      "id": "screen-recording-polish",
+      "label": "Polished Screen Recording",
+      "description": "Raw screen recording wrapped in a device frame with auto-zoom on key actions, smooth pan between sections, and motion blur on fast movements. Transforms boring screencasts into premium demos.",
+      "tags": ["recording", "zoom", "polish", "demo"]
+    },
+    {
+      "id": "logo-reveal-spring",
+      "label": "Logo Reveal with Spring",
+      "description": "Logo enters with a satisfying spring bounce (scale 0→1 with overshoot), optional rotation, and a subtle glow pulse on landing. Can include particle burst behind the logo.",
+      "tags": ["logo", "reveal", "spring", "brand"]
+    },
+    {
+      "id": "progress-bar-fill",
+      "label": "Animated Progress Bar",
+      "description": "A progress or loading bar fills with eased motion, changing color at thresholds. Can include percentage counter alongside. Great for showing improvement, completion, or performance gains.",
+      "tags": ["progress", "bar", "fill", "data"]
+    },
+    {
+      "id": "notification-toast-pop",
+      "label": "Notification Toast Pop",
+      "description": "UI notification toasts slide in from edges with spring physics, hold briefly, then slide out. Shows the product sending real-time updates. Stack multiple for a busy-app feel.",
+      "tags": ["notification", "toast", "ui", "pop"]
+    }
+  ]
+}

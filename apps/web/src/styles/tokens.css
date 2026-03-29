@@ -1,0 +1,193 @@
+/* Shared layout + typography (not palette-specific) */
+:root {
+  --radius-lg: 22px;
+  --radius-md: 14px;
+  --font-sans: "Source Sans 3", system-ui, sans-serif;
+  --font-display: "Cormorant Garamond", "Palatino Linotype", Palatino, serif;
+}
+
+/* Default + blush — also used when `data-app-palette` is missing briefly */
+:root,
+[data-app-palette="blush"] {
+  --color-bg: #eac6c0;
+  --color-shadow-tint: #36100c65;
+
+  --color-rose-deep: #6b2d3c;
+  --color-rose: #b85c6e;
+  --color-blush: #f5d4d0;
+  --color-cream: #fff5f3;
+  --color-ink: #2a1210;
+  --color-ink-muted: #5c3d3a;
+
+  --color-on-accent: #fff5f3;
+  --color-surface: color-mix(in srgb, white 68%, var(--color-cream));
+  --color-surface-soft: color-mix(in srgb, white 42%, var(--color-cream));
+  --color-surface-strong: color-mix(in srgb, white 90%, var(--color-cream));
+
+  --shadow-card: 0 18px 40px -12px color-mix(in srgb, var(--color-ink) 22%, transparent);
+  --shadow-card-hover: 0 24px 48px -14px color-mix(in srgb, var(--color-ink) 28%, transparent);
+  --shadow-elevated: 0 22px 50px -18px color-mix(in srgb, var(--color-ink) 28%, transparent);
+  --shadow-submit: 0 12px 28px -12px color-mix(in srgb, var(--color-ink) 45%, transparent);
+  --shadow-submit-hover: 0 16px 32px -14px color-mix(in srgb, var(--color-ink) 50%, transparent);
+}
+
+[data-app-palette="mono-light"] {
+  --color-bg: #ececee;
+  --color-shadow-tint: #00000022;
+
+  --color-rose-deep: #171717;
+  --color-rose: #3f3f46;
+  --color-blush: #e4e4e7;
+  --color-cream: #ffffff;
+  --color-ink: #0d0d0d;
+  --color-ink-muted: #52525b;
+
+  --color-on-accent: #ffffff;
+  --color-surface: #f4f4f5;
+  --color-surface-soft: #e4e4e7;
+  --color-surface-strong: #fafafa;
+
+  --shadow-card: 0 18px 40px -12px color-mix(in srgb, var(--color-ink) 12%, transparent);
+  --shadow-card-hover: 0 24px 48px -14px color-mix(in srgb, var(--color-ink) 16%, transparent);
+  --shadow-elevated: 0 22px 50px -18px color-mix(in srgb, var(--color-ink) 14%, transparent);
+  --shadow-submit: 0 12px 28px -12px color-mix(in srgb, var(--color-ink) 28%, transparent);
+  --shadow-submit-hover: 0 16px 32px -14px color-mix(in srgb, var(--color-ink) 34%, transparent);
+}
+
+[data-app-palette="mono-dark"] {
+  --color-bg: #141416;
+  --color-shadow-tint: #ffffff18;
+
+  --color-rose-deep: #e4e4e7;
+  --color-rose: #a1a1aa;
+  --color-blush: #222226;
+  --color-cream: #1a1a1d;
+  --color-ink: #f4f4f5;
+  --color-ink-muted: #a1a1aa;
+
+  --color-on-accent: #141416;
+  --color-surface: #2a2a2f;
+  --color-surface-soft: #222226;
+  --color-surface-strong: #323238;
+
+  --shadow-card: 0 18px 40px -12px color-mix(in srgb, black 45%, transparent);
+  --shadow-card-hover: 0 24px 48px -14px color-mix(in srgb, black 55%, transparent);
+  --shadow-elevated: 0 22px 50px -18px color-mix(in srgb, black 50%, transparent);
+  --shadow-submit: 0 12px 28px -12px color-mix(in srgb, black 55%, transparent);
+  --shadow-submit-hover: 0 16px 32px -14px color-mix(in srgb, black 62%, transparent);
+}
+
+[data-app-palette="ocean"] {
+  --color-bg: #c5dfe8;
+  --color-shadow-tint: #0c4a6e55;
+
+  --color-rose-deep: #0c4a6e;
+  --color-rose: #0284c7;
+  --color-blush: #b8dce8;
+  --color-cream: #e8f4f8;
+  --color-ink: #0c1929;
+  --color-ink-muted: #334155;
+
+  --color-on-accent: #e8f4f8;
+  --color-surface: color-mix(in srgb, white 72%, var(--color-cream));
+  --color-surface-soft: color-mix(in srgb, white 48%, var(--color-cream));
+  --color-surface-strong: color-mix(in srgb, white 92%, var(--color-cream));
+
+  --shadow-card: 0 18px 40px -12px color-mix(in srgb, var(--color-rose-deep) 22%, transparent);
+  --shadow-card-hover: 0 24px 48px -14px color-mix(in srgb, var(--color-rose-deep) 28%, transparent);
+  --shadow-elevated: 0 22px 50px -18px color-mix(in srgb, var(--color-rose-deep) 26%, transparent);
+  --shadow-submit: 0 12px 28px -12px color-mix(in srgb, var(--color-ink) 38%, transparent);
+  --shadow-submit-hover: 0 16px 32px -14px color-mix(in srgb, var(--color-ink) 44%, transparent);
+}
+
+[data-app-palette="forest"] {
+  --color-bg: #d0e3d4;
+  --color-shadow-tint: #1a3d2e50;
+
+  --color-rose-deep: #1a3d2e;
+  --color-rose: #2d6a4f;
+  --color-blush: #c5dcc5;
+  --color-cream: #f0f5f0;
+  --color-ink: #14221a;
+  --color-ink-muted: #3d5348;
+
+  --color-on-accent: #f0f5f0;
+  --color-surface: color-mix(in srgb, white 70%, var(--color-cream));
+  --color-surface-soft: color-mix(in srgb, white 45%, var(--color-cream));
+  --color-surface-strong: color-mix(in srgb, white 90%, var(--color-cream));
+
+  --shadow-card: 0 18px 40px -12px color-mix(in srgb, var(--color-rose-deep) 20%, transparent);
+  --shadow-card-hover: 0 24px 48px -14px color-mix(in srgb, var(--color-rose-deep) 26%, transparent);
+  --shadow-elevated: 0 22px 50px -18px color-mix(in srgb, var(--color-rose-deep) 24%, transparent);
+  --shadow-submit: 0 12px 28px -12px color-mix(in srgb, var(--color-ink) 36%, transparent);
+  --shadow-submit-hover: 0 16px 32px -14px color-mix(in srgb, var(--color-ink) 42%, transparent);
+}
+
+[data-app-palette="lavender"] {
+  --color-bg: #ddd8f0;
+  --color-shadow-tint: #4c1d9548;
+
+  --color-rose-deep: #4c1d95;
+  --color-rose: #7c3aed;
+  --color-blush: #ddd6fe;
+  --color-cream: #f5f3ff;
+  --color-ink: #1e1b2e;
+  --color-ink-muted: #5b5675;
+
+  --color-on-accent: #f5f3ff;
+  --color-surface: color-mix(in srgb, white 70%, var(--color-cream));
+  --color-surface-soft: color-mix(in srgb, white 45%, var(--color-cream));
+  --color-surface-strong: color-mix(in srgb, white 90%, var(--color-cream));
+
+  --shadow-card: 0 18px 40px -12px color-mix(in srgb, var(--color-rose-deep) 22%, transparent);
+  --shadow-card-hover: 0 24px 48px -14px color-mix(in srgb, var(--color-rose-deep) 28%, transparent);
+  --shadow-elevated: 0 22px 50px -18px color-mix(in srgb, var(--color-rose-deep) 26%, transparent);
+  --shadow-submit: 0 12px 28px -12px color-mix(in srgb, var(--color-ink) 34%, transparent);
+  --shadow-submit-hover: 0 16px 32px -14px color-mix(in srgb, var(--color-ink) 40%, transparent);
+}
+
+[data-app-palette="sunset"] {
+  --color-bg: #fac8ae;
+  --color-shadow-tint: #9a341245;
+
+  --color-rose-deep: #9a3412;
+  --color-rose: #ea580c;
+  --color-blush: #fed7aa;
+  --color-cream: #fff7ed;
+  --color-ink: #431407;
+  --color-ink-muted: #7c2d12;
+
+  --color-on-accent: #fff7ed;
+  --color-surface: color-mix(in srgb, white 68%, var(--color-cream));
+  --color-surface-soft: color-mix(in srgb, white 42%, var(--color-cream));
+  --color-surface-strong: color-mix(in srgb, white 90%, var(--color-cream));
+
+  --shadow-card: 0 18px 40px -12px color-mix(in srgb, var(--color-rose-deep) 24%, transparent);
+  --shadow-card-hover: 0 24px 48px -14px color-mix(in srgb, var(--color-rose-deep) 30%, transparent);
+  --shadow-elevated: 0 22px 50px -18px color-mix(in srgb, var(--color-rose-deep) 28%, transparent);
+  --shadow-submit: 0 12px 28px -12px color-mix(in srgb, var(--color-ink) 38%, transparent);
+  --shadow-submit-hover: 0 16px 32px -14px color-mix(in srgb, var(--color-ink) 44%, transparent);
+}
+
+[data-app-palette="sand"] {
+  --color-bg: #e7dfd2;
+  --color-shadow-tint: #44403c40;
+
+  --color-rose-deep: #44403c;
+  --color-rose: #78716c;
+  --color-blush: #e7e0d5;
+  --color-cream: #faf8f5;
+  --color-ink: #292524;
+  --color-ink-muted: #57534e;
+
+  --color-on-accent: #faf8f5;
+  --color-surface: color-mix(in srgb, white 65%, var(--color-cream));
+  --color-surface-soft: color-mix(in srgb, white 40%, var(--color-cream));
+  --color-surface-strong: color-mix(in srgb, white 88%, var(--color-cream));
+
+  --shadow-card: 0 18px 40px -12px color-mix(in srgb, var(--color-ink) 18%, transparent);
+  --shadow-card-hover: 0 24px 48px -14px color-mix(in srgb, var(--color-ink) 24%, transparent);
+  --shadow-elevated: 0 22px 50px -18px color-mix(in srgb, var(--color-ink) 22%, transparent);
+  --shadow-submit: 0 12px 28px -12px color-mix(in srgb, var(--color-ink) 32%, transparent);
+  --shadow-submit-hover: 0 16px 32px -14px color-mix(in srgb, var(--color-ink) 38%, transparent);
+}

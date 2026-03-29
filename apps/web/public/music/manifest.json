@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "tracks": [
+    {
+      "id": "none",
+      "title": "No background music",
+      "file": null,
+      "licenseNote": "Voiceover only (or silent if no voice)."
+    },
+    {
+      "id": "custom-upbeat",
+      "title": "Upbeat bed (add upbeat-bed.mp3)",
+      "file": "upbeat-bed.mp3",
+      "licenseNote": "Add your licensed MP3 as upbeat-bed.mp3 (e.g. export from Soundstripe)."
+    },
+    {
+      "id": "custom-ambient",
+      "title": "Ambient bed (add ambient-bed.mp3)",
+      "file": "ambient-bed.mp3",
+      "licenseNote": "Add your licensed MP3 as ambient-bed.mp3."
+    },
+    {
+      "id": "custom-cinematic",
+      "title": "Cinematic bed (add cinematic-bed.mp3)",
+      "file": "cinematic-bed.mp3",
+      "licenseNote": "Add your licensed MP3 as cinematic-bed.mp3."
+    }
+  ]
+}
