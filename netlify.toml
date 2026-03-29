@@ -1,5 +1,5 @@
 [build]
-  command = "npm install && npm run build --workspace=web"
+  command = "npm install && npm run verify:nonempty && npm run build --workspace=web"
   publish = "apps/web/dist"
 
 [build.environment]
@@ -22,9 +22,11 @@
 
 [functions."generating-agent"]
   timeout = 120
+  memory = 1024
 
 [functions."remotion-coding-agent"]
   timeout = 120
+  memory = 1024
 
 [functions."remotion-render-preview"]
   timeout = 300
