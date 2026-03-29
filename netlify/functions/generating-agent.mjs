@@ -10,7 +10,8 @@ const MAX_TOOL_ROUNDS = 22;
 
 /**
  * Default generating backend is OpenAI (gpt-5.4). Override with GENERATING_AGENT_MODEL.
- * Set GENERATING_AGENT_PROVIDER=anthropic for Claude instead.
+ * Set GENERATING_AGENT_PROVIDER=anthropic for Claude, or omit provider and set only ANTHROPIC_API_KEY
+ * (no OPENAI_API_KEY) to use Claude automatically.
  */
 const DEFAULT_OPENAI_MODEL = "gpt-5.4";
 
@@ -33,7 +34,10 @@ function resolveGeneratingBackend() {
   const p = (process.env.GENERATING_AGENT_PROVIDER || "").trim().toLowerCase();
   if (p === "openai") return "openai";
   if (p === "anthropic") return "anthropic";
-  // Default: OpenAI (e.g. gpt-5.4). Claude only when explicitly requested.
+  const openaiKey = (process.env.OPENAI_API_KEY || "").trim();
+  const anthropicKey = (process.env.ANTHROPIC_API_KEY || "").trim();
+  // No provider set: use whichever key is available (Netlify often has only one).
+  if (!openaiKey && anthropicKey) return "anthropic";
   return "openai";
 }
 
