@@ -26,7 +26,7 @@ export async function anthropicCompleteText(opts) {
           messages: [{ role: "user", content: userText }],
         })
         .finalMessage(),
-    { label: "anthropic-text-completion", maxAttempts: 6 }
+    { label: "anthropic-text-completion", maxAttempts: 8 }
   );
   const text = response.content
     .filter((b) => b.type === "text")

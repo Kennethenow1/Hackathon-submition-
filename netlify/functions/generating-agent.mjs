@@ -893,14 +893,28 @@ export async function handler(event) {
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     const status = e?.status ?? e?.response?.status;
-    if (status === 429) {
+    let overloadInBody = false;
+    try {
+      overloadInBody = /overloaded_error/i.test(JSON.stringify(e?.error ?? e));
+    } catch {
+      /* ignore */
+    }
+    const anthropicTransient =
+      backend === "anthropic" &&
+      (status === 429 ||
+        status === 529 ||
+        overloadInBody ||
+        /overloaded|overloaded_error/i.test(msg));
+    if (anthropicTransient || (backend !== "anthropic" && status === 429)) {
       return jsonResponse(429, {
         ok: false,
         error: msg,
         code: backend === "anthropic" ? "anthropic_rate_limit" : "openai_rate_limit",
         hint:
           backend === "anthropic"
-            ? "Anthropic rate limit after retries. Wait and try again, or set GENERATING_AGENT_ANTHROPIC_MODEL=claude-sonnet-4-6."
+            ? overloadInBody || /overloaded/i.test(msg)
+              ? "Anthropic’s API is temporarily overloaded. Wait 1–2 minutes and retry. You can also set GENERATING_AGENT_ANTHROPIC_MODEL=claude-sonnet-4-6."
+              : "Anthropic rate limit after retries. Wait and try again, or set GENERATING_AGENT_ANTHROPIC_MODEL=claude-sonnet-4-6."
             : "OpenAI rate limit after automatic retries. Wait and retry, or check billing and usage at platform.openai.com. Optional throttle: GENERATING_AGENT_ROUND_DELAY_MS.",
       });
     }

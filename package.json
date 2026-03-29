@@ -3,7 +3,8 @@
   "private": true,
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/*",
+    "netlify/functions"
   ],
   "scripts": {
     "dev:web": "npm run dev --workspace=web",
@@ -14,6 +15,8 @@
     "netlify-cli": "^17.38.1"
   },
   "dependencies": {
-    "jsonrepair": "^3.13.3"
+    "@anthropic-ai/sdk": "^0.39.0",
+    "jsonrepair": "^3.13.3",
+    "openai": "^4.77.0"
   }
 }

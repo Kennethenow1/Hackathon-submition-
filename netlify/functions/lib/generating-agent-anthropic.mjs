@@ -88,7 +88,7 @@ export async function runAnthropicGeneratingLoop(opts) {
             messages,
           })
           .finalMessage(),
-      { label: "generating-agent-anthropic", maxAttempts: 6 }
+      { label: "generating-agent-anthropic", maxAttempts: 8 }
     );
 
     messages.push({

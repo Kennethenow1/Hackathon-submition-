@@ -502,14 +502,28 @@ export async function handler(event) {
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     const status = e?.status ?? e?.response?.status;
-    if (status === 429) {
+    let overloadInBody = false;
+    try {
+      overloadInBody = /overloaded_error/i.test(JSON.stringify(e?.error ?? e));
+    } catch {
+      /* ignore */
+    }
+    const anthropicOverload =
+      backend === "anthropic" &&
+      (status === 429 ||
+        status === 529 ||
+        overloadInBody ||
+        /overloaded|overloaded_error/i.test(msg));
+    if (anthropicOverload || (backend !== "anthropic" && status === 429)) {
       return jsonResponse(429, {
         ok: false,
         error: msg,
         code: backend === "anthropic" ? "anthropic_rate_limit" : "openai_rate_limit",
         hint:
           backend === "anthropic"
-            ? "Anthropic rate limit after retries. Wait and retry, or try REMOTION_CODING_AGENT_ANTHROPIC_MODEL=claude-sonnet-4-6 (or haiku) for lower load."
+            ? overloadInBody || /overloaded/i.test(msg)
+              ? "Anthropic’s API is temporarily overloaded (not your fault). Wait 1–2 minutes and click Run again. If it keeps happening, try REMOTION_CODING_AGENT_ANTHROPIC_MODEL=claude-sonnet-4-6 or switch to OpenAI with REMOTION_CODING_AGENT_PROVIDER=openai."
+              : "Anthropic rate limit after retries. Wait and retry, or try REMOTION_CODING_AGENT_ANTHROPIC_MODEL=claude-sonnet-4-6 (or haiku) for lower load."
             : "OpenAI rate limit after automatic retries. Wait a minute and try again.",
       });
     }

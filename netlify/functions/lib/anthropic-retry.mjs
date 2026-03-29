@@ -3,13 +3,22 @@ function sleep(ms) {
 }
 
 /**
+ * Transient Anthropic errors we should backoff-retry (rate limits, API overload, some 5xx).
  * @param {unknown} err
  * @returns {boolean}
  */
-function isAnthropicRateLimit(err) {
+function isAnthropicRetriableError(err) {
   const status = err?.status ?? err?.response?.status;
   const msg = typeof err?.message === "string" ? err.message : String(err);
-  return status === 429 || /429|rate limit/i.test(msg);
+  if (status === 429 || status === 529) return true;
+  if (/429|rate limit|overloaded|529/i.test(msg)) return true;
+  try {
+    const blob = JSON.stringify(err?.error ?? err);
+    if (/overloaded_error/i.test(blob)) return true;
+  } catch {
+    /* ignore */
+  }
+  return false;
 }
 
 /**
@@ -25,9 +34,11 @@ export async function withAnthropicRetry(fn, opts = {}) {
       return await fn();
     } catch (e) {
       lastErr = e;
-      if (!isAnthropicRateLimit(e) || attempt === maxAttempts - 1) throw e;
-      const waitMs = Math.min(60_000, 2000 * 2 ** attempt) + Math.floor(Math.random() * 500);
-      console.warn(`[${label}] Anthropic rate limit, attempt ${attempt + 1}/${maxAttempts}, wait ${waitMs}ms`);
+      if (!isAnthropicRetriableError(e) || attempt === maxAttempts - 1) throw e;
+      const waitMs = Math.min(90_000, 2500 * 2 ** attempt) + Math.floor(Math.random() * 800);
+      console.warn(
+        `[${label}] Anthropic transient error (rate limit / overload), attempt ${attempt + 1}/${maxAttempts}, wait ${waitMs}ms`
+      );
       await sleep(waitMs);
     }
   }
