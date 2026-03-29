@@ -1,0 +1,22 @@
+{
+  "name": "ai-slop-machine",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "netlify/functions"
+  ],
+  "scripts": {
+    "dev:web": "npm run dev --workspace=web",
+    "dev:functions": "node scripts/serve-functions.mjs --port 9999",
+    "dev": "npm run dev:functions & npm run dev:web"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.38.1"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "jsonrepair": "^3.13.3",
+    "openai": "^4.77.0"
+  }
+}
