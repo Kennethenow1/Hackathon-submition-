@@ -26,6 +26,7 @@ export type FlyerPromoProps = {
 };
 
 const fullVideoDuration = 2100;
+export const FLYER_COMP_DURATION_IN_FRAMES = fullVideoDuration;
 
 const cardShadow = '0 18px 40px -12px rgba(0,0,0,0.22)';
 const uiShadow = '0 24px 60px rgba(15,23,42,0.12)';

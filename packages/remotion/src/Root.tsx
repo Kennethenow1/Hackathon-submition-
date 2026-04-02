@@ -1,21 +1,17 @@
+import React from "react";
 import { Composition } from "remotion";
-import {
-  HackIndyPromo,
-  HACK_INDY_DURATION_IN_FRAMES,
-} from "./HackIndy/HackIndyPromo";
+import { FlyerPromo, FLYER_COMP_DURATION_IN_FRAMES } from "./FlyerPromo/index";
 
 export const RemotionRoot: React.FC = () => {
   return (
-    <>
-      <Composition
-        id="HackIndy2026Promo"
-        component={HackIndyPromo}
-        durationInFrames={HACK_INDY_DURATION_IN_FRAMES}
-        fps={30}
-        width={1920}
-        height={1080}
-        defaultProps={{}}
-      />
-    </>
+    <Composition
+      id="FlyerPromo"
+      component={FlyerPromo}
+      durationInFrames={FLYER_COMP_DURATION_IN_FRAMES}
+      fps={30}
+      width={1920}
+      height={1080}
+      defaultProps={{}}
+    />
   );
 };

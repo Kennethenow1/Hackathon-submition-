@@ -26,7 +26,8 @@
   memory = 1024
 
 [functions."remotion-coding-agent"]
-  timeout = 120
+  # Long Claude JSON runs; in-process cap can be off (REMOTION_CODING_AGENT_TIMEOUT_MS=0). Wall clock max (plan-dependent).
+  timeout = 900
   memory = 1024
 
 [functions."remotion-render-preview"]

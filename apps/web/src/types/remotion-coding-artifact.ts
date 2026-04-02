@@ -59,6 +59,8 @@ export type RemotionRenderPreviewRequestBody = {
   files: RemotionCodingFile[];
   compositionId: string;
   inputProps?: Record<string, unknown>;
+  /** If false, keep render silent (skip voice + fallback music bed). Default true. */
+  includeAudio?: boolean;
   /** Sound-design markdown table; triggers post-render SFX synthesis via ffmpeg. */
   soundMd?: string;
   /** Voiceover markdown table; triggers post-render TTS via OpenAI speech API. */

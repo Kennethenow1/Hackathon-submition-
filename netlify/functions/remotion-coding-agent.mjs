@@ -7,7 +7,7 @@ import { anthropicCompleteText } from "./lib/anthropic-text-completion.mjs";
 import { parseLlmJsonObject } from "./lib/parse-llm-json.mjs";
 
 /** OpenAI path — override with REMOTION_CODING_AGENT_MODEL (e.g. gpt-5.4-mini). */
-const DEFAULT_OPENAI_MODEL = "gpt-5.4";
+const DEFAULT_OPENAI_MODEL = "gpt-5-mini";
 
 /**
  * Anthropic path (default when ANTHROPIC_API_KEY is set).
@@ -19,13 +19,15 @@ function resolveRemotionCodingBackend() {
   const p = (process.env.REMOTION_CODING_AGENT_PROVIDER || "").trim().toLowerCase();
   if (p === "openai") return "openai";
   if (p === "anthropic") return "anthropic";
-  if (process.env.ANTHROPIC_API_KEY) return "anthropic";
+  // Default to OpenAI for reliability unless Anthropic is explicitly requested.
   return "openai";
 }
 
 /** GPT-5 class models allow very large completions (~128k). Long multi-scene videos need this headroom. */
 const MAX_OUTPUT_TOKENS_CAP = 128_000;
 const DEFAULT_MAX_OUTPUT_TOKENS = 120_000;
+/** 0 = no in-process LLM timeout (wait for the model). Hosting still enforces a wall clock (see netlify.toml). */
+const DEFAULT_AGENT_TIMEOUT_MS = 0;
 
 function resolveMaxOutputTokens() {
   const raw = process.env.REMOTION_CODING_AGENT_MAX_OUTPUT_TOKENS;
@@ -47,6 +49,47 @@ function effectiveMaxOutputTokens(model) {
     return Math.min(n, MAX_OUTPUT_TOKENS_CAP);
   }
   return Math.min(n, LEGACY_MODEL_MAX_OUTPUT);
+}
+
+/**
+ * @returns {number} ms cap for the model call, or 0 = no in-process timeout.
+ * `REMOTION_CODING_AGENT_TIMEOUT_MS=0` disables the cap. Positive values below 30_000 are ignored (use 0 or at least 30000).
+ */
+function resolveAgentTimeoutMs() {
+  const raw = process.env.REMOTION_CODING_AGENT_TIMEOUT_MS;
+  if (raw != null && String(raw).trim() !== "") {
+    const n = Number.parseInt(String(raw), 10);
+    if (Number.isFinite(n)) {
+      if (n === 0) return 0;
+      if (n >= 30_000) return n;
+    }
+  }
+  return DEFAULT_AGENT_TIMEOUT_MS;
+}
+
+function withTimeout(promise, timeoutMs, label) {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => {
+      reject(new Error(`${label} timed out after ${timeoutMs}ms`));
+    }, timeoutMs);
+    Promise.resolve(promise).then(
+      (v) => {
+        clearTimeout(timer);
+        resolve(v);
+      },
+      (e) => {
+        clearTimeout(timer);
+        reject(e);
+      }
+    );
+  });
+}
+
+function maybeWithTimeout(promise, timeoutMs, label) {
+  if (!timeoutMs || timeoutMs <= 0) {
+    return Promise.resolve(promise);
+  }
+  return withTimeout(promise, timeoutMs, label);
 }
 
 const BASE_SYSTEM = `You are the **Remotion coding agent** for this monorepo.
@@ -97,6 +140,7 @@ If \`prompt.md\` is vague on easing, **default to smooth** motion that matches t
 - **No emoji** (Unicode pictographs) in TSX/CSS strings or comments—use **\`lucide-react\`** icons (\`import { Sparkles } from "lucide-react"\`) or plain text. Emoji makes JSON escaping harder and is unnecessary for UI polish.
 - Prefer **TypeScript** (\`.tsx\` / \`.ts\`).
 - **Critical --- \`index.ts\`:** Do NOT include \`index.ts\` in your files array. Leave it as-is.
+- **Do not create competing module entrypoints** for the same name (e.g. \`src/FlyerPromo.tsx\` and \`src/FlyerPromo/index.tsx\` in one output). Pick one canonical path to avoid stale/duplicate renders.
 - **You MUST include \`Root.tsx\` in your files array.** It must import your main composition component, register it via \`<Composition id="YourCompositionId" component={YourComponent} ... />\`, and export \`RemotionRoot\`.
 - **Composition duration --- single source of truth:** Compute total frames from your timeline (\`<Series>\`, \`<Sequence>\`, \`TransitionSeries\`, overlaps, etc.). Export one constant from the composition file, e.g. \`export const MY_COMP_DURATION_IN_FRAMES = ...\`, and set \`<Composition durationInFrames={MY_COMP_DURATION_IN_FRAMES}\` in \`Root.tsx\` by importing that constant. **Never** hardcode a different number in Root than inside the composition.
 - **Never** add runtime checks like \`if (total !== 2070) throw new Error("Duration mismatch")\` --- they break render whenever math drifts by one frame. Fix the arithmetic or the constant instead; do not throw.
@@ -364,6 +408,35 @@ function validatePayload(data) {
       return `Each file needs content_b64 or content string: ${p}`;
     }
   }
+
+  // Reject path collisions that create ambiguous imports (Foo.tsx vs Foo/index.tsx).
+  const normalized = new Set(
+    data.files
+      .map((f) => String(f?.path || "").replace(/\\/g, "/"))
+      .filter(Boolean)
+  );
+  for (const p of normalized) {
+    if (p.endsWith("/index.tsx")) {
+      const stem = p.slice(0, -"/index.tsx".length);
+      const siblingFile = `${stem}.tsx`;
+      if (normalized.has(siblingFile)) {
+        return `Conflicting module entrypoints detected: ${siblingFile} and ${p}. Keep only one canonical path.`;
+      }
+    }
+  }
+
+  // Guardrail: catch a common model regression before writing files/rendering.
+  const rootFile = data.files.find((f) => {
+    const p = String(f?.path || "").replace(/\\/g, "/");
+    return p.endsWith("/src/Root.tsx");
+  });
+  if (!rootFile || typeof rootFile.content !== "string") {
+    return "Missing packages/remotion/src/Root.tsx in files output";
+  }
+  if (!/durationInFrames\s*=\s*\{[^}]+\}/.test(rootFile.content)) {
+    return 'Root.tsx must set <Composition durationInFrames={...}>; the "durationInFrames" prop is missing.';
+  }
+
   return null;
 }
 
@@ -418,6 +491,15 @@ export async function handler(event) {
     skillContext = buildRemotionSkillContext();
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
+    if (/timed out after \d+ms/i.test(msg)) {
+      return jsonResponse(504, {
+        ok: false,
+        error: msg,
+        code: "agent_timeout",
+        hint:
+          "The model request exceeded the server timeout. Set REMOTION_CODING_AGENT_TIMEOUT_MS=0 to disable the in-process cap, or raise it. Netlify still enforces a function wall clock (netlify.toml).",
+      });
+    }
     return jsonResponse(500, {
       ok: false,
       error: msg,
@@ -443,6 +525,7 @@ export async function handler(event) {
   let content = "";
   let modelUsed = "";
   let provider = backend;
+  const agentTimeoutMs = resolveAgentTimeoutMs();
 
   try {
     if (backend === "anthropic") {
@@ -451,13 +534,17 @@ export async function handler(event) {
         128_000,
         Math.max(4096, resolveMaxOutputTokens())
       );
-      const { text, stopReason } = await anthropicCompleteText({
-        apiKey: anthropicKey,
-        model: modelUsed,
-        system: systemContent,
-        userText: userMessage,
-        maxOutputTokens: maxTok,
-      });
+      const { text, stopReason } = await maybeWithTimeout(
+        anthropicCompleteText({
+          apiKey: anthropicKey,
+          model: modelUsed,
+          system: systemContent,
+          userText: userMessage,
+          maxOutputTokens: maxTok,
+        }),
+        agentTimeoutMs,
+        "Anthropic remotion-coding-agent request"
+      );
       content = text;
       if (stopReason === "max_tokens") {
         return jsonResponse(200, {
@@ -470,24 +557,28 @@ export async function handler(event) {
       modelUsed = process.env.REMOTION_CODING_AGENT_MODEL || DEFAULT_OPENAI_MODEL;
       const maxOutputTokens = effectiveMaxOutputTokens(modelUsed);
       const client = new OpenAI({ apiKey: openaiKey });
-      const completion = await withOpenAiRateLimitRetry(
-        () =>
-          client.chat.completions.create(
-            chatCompletionBody(modelUsed, {
-              model: modelUsed,
-              temperature: 0.25,
-              max_tokens: maxOutputTokens,
-              response_format: { type: "json_object" },
-              messages: [
-                { role: "system", content: systemContent },
-                {
-                  role: "user",
-                  content: userMessage,
-                },
-              ],
-            })
-          ),
-        { label: "remotion-coding-agent", maxAttempts: 8 }
+      const completion = await maybeWithTimeout(
+        withOpenAiRateLimitRetry(
+          () =>
+            client.chat.completions.create(
+              chatCompletionBody(modelUsed, {
+                model: modelUsed,
+                temperature: 0.25,
+                max_tokens: maxOutputTokens,
+                response_format: { type: "json_object" },
+                messages: [
+                  { role: "system", content: systemContent },
+                  {
+                    role: "user",
+                    content: userMessage,
+                  },
+                ],
+              })
+            ),
+          { label: "remotion-coding-agent", maxAttempts: 8 }
+        ),
+        agentTimeoutMs,
+        "OpenAI remotion-coding-agent request"
       );
       const choice = completion.choices[0];
       content = choice?.message?.content ?? "";
@@ -501,6 +592,15 @@ export async function handler(event) {
     }
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
+    if (/timed out after \d+ms/i.test(msg)) {
+      return jsonResponse(504, {
+        ok: false,
+        error: msg,
+        code: "agent_timeout",
+        hint:
+          "The model request exceeded the server timeout. Set REMOTION_CODING_AGENT_TIMEOUT_MS=0 to disable the in-process cap, or raise it. Netlify still enforces a function wall clock (netlify.toml).",
+      });
+    }
     const status = e?.status ?? e?.response?.status;
     let overloadInBody = false;
     try {

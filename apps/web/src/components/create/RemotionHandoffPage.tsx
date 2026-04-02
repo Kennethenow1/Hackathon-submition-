@@ -36,11 +36,23 @@ function safeFilename(path: string): string {
   return path.replace(/^packages\/remotion\//, "").replace(/\//g, "__");
 }
 
+/** True when the UI is opened on this machine (Vite / local functions). IPv6 loopback included. */
+function isLocalDevHostname(hostname: string): boolean {
+  return (
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    hostname === "[::1]" ||
+    hostname === "::1"
+  );
+}
+
 /** Remotion step: run server agent with vendored skill + prompt.md → proposed package files. */
 export function RemotionHandoffPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const s = (location.state as LocationState | null) ?? null;
+  const isLocalDevHost =
+    typeof window !== "undefined" && isLocalDevHostname(window.location.hostname);
 
   const [promptMd, setPromptMd] = useState(s?.promptMd ?? "");
   const [voiceMd, setVoiceMd] = useState(s?.voiceMd ?? "");
@@ -178,6 +190,12 @@ export function RemotionHandoffPage() {
 
   async function handleRenderAndPreview() {
     setRenderError(null);
+    if (!isLocalDevHost) {
+      setRenderError(
+        "This render step runs only in local dev because it writes files to packages/remotion and runs `npx remotion` on disk. Run `npm run dev` from the repo root, open the local Vite URL, then click Apply files & render video."
+      );
+      return;
+    }
     if (!files?.length || !compositionId) {
       setRenderError("Run the coding agent first so files and compositionId are available.");
       return;
@@ -187,6 +205,7 @@ export function RemotionHandoffPage() {
       const res = await runRemotionRenderPreview({
         files,
         compositionId,
+        includeAudio,
         soundMd: includeAudio && soundMd ? soundMd : undefined,
         voiceMd: includeAudio && voiceMd ? voiceMd : undefined,
         ...(flyerBrand
@@ -513,14 +532,23 @@ export function RemotionHandoffPage() {
                 <button
                   type="button"
                   className="create-capture-btn create-capture-btn--primary"
-                  disabled={renderBusy || !compositionId}
+                  disabled={renderBusy || !compositionId || !isLocalDevHost}
                   onClick={() => void handleRenderAndPreview()}
                 >
                   {renderBusy
                     ? "Rendering video (may take a few minutes)…"
-                    : "Apply files & render video"}
+                    : !isLocalDevHost
+                      ? "Render works in local dev only"
+                      : "Apply files & render video"}
                 </button>
               </div>
+              {!isLocalDevHost ? (
+                <p className="create-card__note">
+                  Hosted deploys can generate files, but rendering requires local dev (
+                  <code className="create-card__code">npm run dev</code>) so the function can write to{" "}
+                  <code className="create-card__code">packages/remotion</code> and run the Remotion CLI.
+                </p>
+              ) : null}
               {renderError ? (
                 <div
                   className="create-capture-result create-capture-result--error"

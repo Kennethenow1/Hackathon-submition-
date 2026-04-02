@@ -17,9 +17,9 @@ const DEFAULT_OPENAI_MODEL = "gpt-5.4";
 
 /**
  * OpenAI phase 2: timed voice_md + sound_md only (cheaper model, one JSON completion).
- * Override with GENERATING_AGENT_VOICE_SOUND_MODEL (e.g. gpt-4o-mini).
+ * Override with GENERATING_AGENT_VOICE_SOUND_MODEL (e.g. gpt-4o, gpt-4o-mini).
  */
-const DEFAULT_OPENAI_VOICE_SOUND_MODEL = "gpt-4o-mini";
+const DEFAULT_OPENAI_VOICE_SOUND_MODEL = "gpt-4o";
 
 /**
  * Anthropic generating agent — override with GENERATING_AGENT_ANTHROPIC_MODEL.
@@ -49,12 +49,14 @@ const SYSTEM = `You are the **Generating agent** for a promo-video pipeline. The
 4. **prompt_md** -- A **precise production brief** for a **Remotion** rendering agent: timeline in **frames** (state assumed FPS), scene cuts, what to show from the site, which promotion effects to use, and how audio lines up.
 
 ## Rules
+- Primary objective: turn the captured **React UI** into a Remotion video that clearly reflects what the user asked for. Use the real interface structure and copy from the capture as the main source of visuals.
 - Use the tools to read the bundle; do not invent DOM details -- ground copy in **navigation_md** and **site** slices.
 - Respect the user's **vision**, **video_spec** (if provided), and **selected effects** when choosing pacing, length, and emphasis.
 - Prefer concise, actionable wording. Use metric timestamps (seconds) in voice/sound tables; use frames in the Remotion brief (derive frames from seconds using the FPS you state).
 - When the site HTML is large, read it in slices until you understand layout/sections; combine with navigation_md.
 - When finished, call **submit_generating_outputs** exactly once with all four markdown strings.
 - **START with ideas_md** — brainstorm the concept FIRST, then build voice/sound/prompt from that concept.
+- Style references like Apple/Stripe/Google are **quality references only** (smoothness, polish, pacing). They are NOT mandatory aesthetics. Match the user's requested style first; if unspecified, derive style from the captured site's own brand language.
 
 ## Required shapes (must follow)
 
@@ -183,6 +185,7 @@ Describe the exact spatial layout. Examples:
 - "Left-aligned hero text (55% width) + right side: 3 floating animated cards"
 - "Full-page UI in browser frame, camera zooms into the form section at 60% from top"
 - "Split screen: before state on left, after state on right, animated divider wipe"
+- Default to a **center-weighted composition** (main browser frame / main headline anchored near visual center). Place major elements at edges only when the brief explicitly calls for asymmetric staging.
 
 ### 3. CSS styling from captured site
 Extract and specify EXACT CSS properties from the captured HTML/CSS for the Remotion agent (read real values from the bundle—**do not invent** a separate aesthetic):
@@ -198,6 +201,7 @@ For EACH visual element, specify motion that is **smooth and attention-grabbing*
 - Any continuous motion: "gentle sine float (8px vertical)", "slow rotation", "camera ease-in-out zoom scale 0.95->1.08 over 140 frames"
 - Exit: "frames 135-150, ease-in opacity fade + subtle scale to 0.97"
 - Cursor path (if UI showcase): describe **which UI element** is clicked and **relative placement** (e.g. "center of the primary CTA in the right card grid"). The Remotion agent must **derive (x,y) from the same layout math as that element**—not unrelated pixel literals—and use \`arrowTipOffsetPx\` + \`CURSOR_ARROW_PATH_D\` from \`packages/remotion/src/cursorTipOffset.ts\` (tip = target point, never duplicate the SVG \`d\` string).
+- When the user gives explicit interaction timing, preserve it in the timeline. Example pattern: frame 0-30 show homepage, 30-90 cursor moves to "Sign Up", frame 90 click feedback, 90-150 transition, 150-240 show second page content.
 
 ### 5. Decorative and depth layers
 Specify THREE layers:
@@ -250,7 +254,7 @@ The user may select any of these effects. When they do, incorporate them natural
 - **feature-zoom-callout**: Smooth zoom into a specific feature area with glassmorphism label
 - **staggered-card-grid**: Cards animate in one-by-one with spring physics
 - **word-by-word-kinetic**: Headlines animate word-by-word with spring delays or shimmer
-- **gradient-mesh-bg**: Organic gradient background with sin/cos drift (Apple/Stripe style)
+- **gradient-mesh-bg**: Organic gradient background with sin/cos drift (brand-derived; not tied to any specific company aesthetic)
 - **cursor-interaction**: Animated cursor navigating the UI with click ripples
 - **light-leak-transition**: Cinematic light leak overlays between scenes
 - **particle-field**: Floating luminous dots with sine-wave drift

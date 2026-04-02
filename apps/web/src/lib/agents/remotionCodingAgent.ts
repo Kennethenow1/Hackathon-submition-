@@ -10,7 +10,10 @@ const FUNCTIONS_PATH = "/.netlify/functions/remotion-coding-agent";
 export async function runRemotionCodingAgent(
   body: RemotionCodingRequestBody
 ): Promise<RemotionCodingResponse> {
-  const posted = await postNetlifyFunction(FUNCTIONS_PATH, body);
+  const posted = await postNetlifyFunction(FUNCTIONS_PATH, body, {
+    // Match Vite proxy (30m); no in-process server timeout when REMOTION_CODING_AGENT_TIMEOUT_MS=0.
+    timeoutMs: 1_800_000,
+  });
   if (!posted.ok) {
     return { ok: false, error: posted.error, code: "fetch_failed" };
   }

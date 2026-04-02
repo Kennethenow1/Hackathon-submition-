@@ -12,7 +12,8 @@ export async function runRemotionRenderPreview(
 ): Promise<RemotionRenderPreviewResponse> {
   const posted = await postNetlifyFunction(
     FUNCTIONS_PATH,
-    input satisfies RemotionRenderPreviewRequestBody
+    input satisfies RemotionRenderPreviewRequestBody,
+    { timeoutMs: 1_900_000 }
   );
   if (!posted.ok) {
     return { ok: false, error: posted.error, code: "fetch_failed" };

@@ -1,5 +1,5 @@
 import { spawn } from "node:child_process";
-import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, renameSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { corsHeaders } from "./lib/cors.mjs";
 import { runAudioPipeline } from "./lib/audio-pipeline.mjs";
@@ -11,6 +11,7 @@ const RENDER_TIMEOUT_MS = 1_800_000;
 const PREVIEW_SKIP_WRITE_PATHS = new Set([
   "packages/remotion/src/index.ts",
 ]);
+const DEFAULT_MUSIC_BED_REL = "apps/web/public/music/mixkit-pop-track-03.mp3";
 
 function jsonResponse(statusCode, body, extraHeaders = {}) {
   return {
@@ -118,6 +119,62 @@ function runRemotionRender(compositionId, outputAbs, inputProps) {
   });
 }
 
+function runFfmpeg(args, cwd) {
+  return new Promise((resolve, reject) => {
+    const child = spawn("ffmpeg", args, {
+      cwd,
+      env: { ...process.env },
+      shell: false,
+    });
+    let out = "";
+    let err = "";
+    child.stdout?.on("data", (c) => {
+      out += c.toString();
+      if (out.length > 16_000) out = out.slice(-16_000);
+    });
+    child.stderr?.on("data", (c) => {
+      err += c.toString();
+      if (err.length > 16_000) err = err.slice(-16_000);
+    });
+    child.on("error", reject);
+    child.on("close", (code) => {
+      if (code === 0) resolve({ out, err });
+      else reject(new Error((err || out || `ffmpeg exited ${code}`).slice(-1200)));
+    });
+  });
+}
+
+async function muxBackgroundMusic(videoAbs, musicAbs) {
+  const outTmp = `${videoAbs}.musicbed.mp4`;
+  await runFfmpeg(
+    [
+      "-y",
+      "-i",
+      videoAbs,
+      "-stream_loop",
+      "-1",
+      "-i",
+      musicAbs,
+      "-filter:a",
+      "volume=0.22",
+      "-map",
+      "0:v:0",
+      "-map",
+      "1:a:0",
+      "-c:v",
+      "copy",
+      "-c:a",
+      "aac",
+      "-b:a",
+      "192k",
+      "-shortest",
+      outTmp,
+    ],
+    path.dirname(videoAbs)
+  );
+  renameSync(outTmp, videoAbs);
+}
+
 export async function handler(event) {
   if (event.httpMethod === "OPTIONS") {
     return { statusCode: 204, headers: corsHeaders(), body: "" };
@@ -186,6 +243,7 @@ export async function handler(event) {
 
   const inputProps = body.inputProps;
   const voiceMd = typeof body.voiceMd === "string" ? body.voiceMd : "";
+  const includeAudio = body.includeAudio !== false;
 
   try {
     await runRemotionRender(compositionId, outputAbs, inputProps);
@@ -210,12 +268,40 @@ export async function handler(event) {
 
   // Post-render audio pipeline: TTS voiceover only (SFX disabled for now)
   let audioWarnings = [];
-  if (voiceMd) {
+  if (includeAudio && voiceMd) {
     try {
       const result = await runAudioPipeline(outputAbs, { voiceMd });
       audioWarnings = result.warnings || [];
     } catch (e) {
       audioWarnings = [`Audio pipeline error: ${e instanceof Error ? e.message : String(e)}`];
+    }
+  }
+
+  // Fallback safety net: if includeAudio is on but no usable voice was produced, add a background music bed.
+  if (includeAudio) {
+    const fallbackMusicAbs = path.join(root, ...DEFAULT_MUSIC_BED_REL.split("/"));
+    const shouldAddMusicBed =
+      !voiceMd ||
+      audioWarnings.some((w) =>
+        /No valid voice cues parsed|No audio tracks generated successfully|Set ELEVENLABS_API_KEY|Audio pipeline error/i.test(
+          String(w)
+        )
+      );
+    if (shouldAddMusicBed) {
+      if (existsSync(fallbackMusicAbs)) {
+        try {
+          await muxBackgroundMusic(outputAbs, fallbackMusicAbs);
+          audioWarnings.push("Voiceover unavailable — used default background music bed instead.");
+        } catch (e) {
+          audioWarnings.push(
+            `Music bed fallback failed: ${e instanceof Error ? e.message : String(e)}`
+          );
+        }
+      } else {
+        audioWarnings.push(
+          `No voiceover and fallback music file missing (${DEFAULT_MUSIC_BED_REL}).`
+        );
+      }
     }
   }
 
